@@ -1,0 +1,22 @@
+
+<nav class="bg-white">
+    <div class="m-4">
+        <div class="container">
+            <div class="flex items-center justify-between">
+                <img src="https://www.jobsglobal.com/assets/images/logo_red.png" alt="logo" class="w-[77px] h-[38px]">
+                <div class="flex gap-2 items-center">
+                    <a routerLink="/" class="font-semibold text-md cursor-pointer">Home</a>
+                    <ng-container *ngIf="!isLoggedIn()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="#a15653" d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8z"/></svg>
+    
+                        <a class="text text-gray-800 font-semibold cursor-pointer" routerLink="/auth/login">Login</a>
+                    </ng-container>
+                    <ng-container *ngIf="isLoggedIn()">
+                        <span class="font-semibold text-md cursor-pointer">{{user()?.emailOrPhone}}</span>
+                        <span class="font-semibold text-md cursor-pointer" (click)="onLogOut()">Logout</span>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

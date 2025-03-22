@@ -1,0 +1,246 @@
+<section class="text-gray-600 body-font">
+  <div class="container ">
+    <div class="flex gap-2 flex-wrap items-center">
+      <!-- Debounce Way -->
+      <!-- <div class="p-4 lg-3"> 
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="keywords">
+            Keywords
+          </label>
+          <input
+            class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+            id="keywords" type="text" placeholder="keywords" (input)="handelSearchKeywords($event)">
+        </div>
+      </div> -->
+      <div class="p-4 lg-3">
+        <div class="">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="keywords">
+            Keywords
+          </label>
+          <input
+            class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+            id="keywords" type="text" placeholder="keywords" [(ngModel)]="filterParams().keyword">
+        </div>
+      </div>
+      <div class="p-4 lg-3">
+        <label class="block text-gray-700 text-sm font-bold mb-2">
+          Country
+        </label>
+        <select
+          class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700  py-2 px-4 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+          id="grid-state" [(ngModel)]="filterParams().location">
+          <option value="">Change Country</option>
+          <option value="Egypt">Egypt</option>
+          <option value="Dubai">Dubai</option>
+
+        </select>
+      </div>
+      <div class="px-4 lg-3 mt-4">
+        <div class="flex items-center gap-2">
+          <button class="bg-red-800 text-white py-2 px-4 rounded-md" (click)="onSearch()">Search</button>
+          <button class="bg-gray-800 text-white py-2 px-4 rounded-md" (click)="clearSearch()">Clear</button>
+
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-wrap">
+
+      <div class="p-4 lg:w-1/3" *ngFor="let job of jobsList()">
+
+        <div class="h-full bg-gray-100 bg-opacity-75 px-8 pt-8 pb-24 rounded-lg overflow-hidden text-center relative">
+          <div class="flex items-center justify-end">
+            <span class=" text-white bg-red-800 px-2 rounded-md">{{job.created_at | dateAgo }}</span>
+          </div>
+          <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 my-1" >{{job.page.alias}}</h2>
+          <div class="flex items-center justify-center">
+            <img [src]="job.cover" alt="image" class="w-auto object-cover h-[180px] aspect-1 rounded-lg">
+          </div>
+          <h1 class="title-font sm:text-2xl text-xl font-medium text-gray-900 my-3">{{job.title}}</h1>
+          <p class="leading-relaxed mb-3" [appSeeMore]="job.description || 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less'" [maxLength]="30"></p>
+          <a class="text-indigo-500 inline-flex items-center cursor-pointer" (click)="openDetailsJob(job)">Details
+            <svg class="w-4 h-4 ml-2" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+              <path d="M12 5l7 7-7 7"></path>
+            </svg>
+          </a>
+          <div class="text-center mt-2 leading-none flex justify-center absolute bottom-0 left-0 w-full py-4">
+            <span class="text-gray-400 mr-3 inline-flex items-center leading-none text-sm pr-3 py-1">
+              {{job.page.location.address_line_one + ' ' + job.page.location.address_line_two}}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-3 gap-4 p-4 place-items-center" *ngIf="jobsList().length === 0 && isJobsLoading()">
+      <div class="h-[310px] w-full bg-gray-200 rounded-lg animate-pulse" aria-hidden="true"></div>
+      <div class="h-[310px] w-full bg-gray-200 rounded-lg animate-pulse" aria-hidden="true"></div>
+      <div class="h-[310px] w-full bg-gray-200 rounded-lg animate-pulse" aria-hidden="true"></div>
+      <div class="h-[310px] w-full bg-gray-200 rounded-lg animate-pulse" aria-hidden="true"></div>
+      <div class="h-[310px] w-full bg-gray-200 rounded-lg animate-pulse" aria-hidden="true"></div>
+      <div class="h-[310px] w-full bg-gray-200 rounded-lg animate-pulse" aria-hidden="true"></div>
+    </div>
+  </div>
+  <div class="d-flex items-center justify-center my-4" *ngIf="jobsList().length > 0">
+    <button class="bg-red-800 text-white rounded-lg py-2 px-4">
+      <span *ngIf="isJobsLoading()" class="loader"></span>
+      <span *ngIf="!isJobsLoading()" (click)="loadMoreJobs()">Load more</span>
+    </button>
+  </div>
+</section>
+
+
+<!-- Details -->
+<ng-template #jobsDetails let-modal>
+  <div class="modal-header">
+    <div class="flex gap-2 items-center">
+      <span (click)="onBackToDetails()" class="w-max cursor-pointer" *ngIf="detailsState === 'apply'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+          <path fill="#a15653" d="M20 11H7.83l5.59-5.59L12 4l-8 8l8 8l1.41-1.41L7.83 13H20z" />
+        </svg>
+      </span>
+      <h4 class="modal-title" id="modal-basic-title">
+        Job Details
+      </h4>
+    </div>
+    <button type="button" class="btn-close" aria-label="Close" (click)="onCloseJobModal()"></button>
+  </div>
+  <div class="modal-body">
+    <ng-container *ngIf="detailsState === 'details'">
+      <div class="flex gap-x-10 items-center justify-center">
+        <img [src]="tempJobDetails?.cover" alt="image" class="rounded-lg">
+      </div>
+      <div class="flex flex-wrap -m-4">
+        <div class="p-4 w-full">
+          <h2 class="font-medium title-font tracking-widest text-gray-900">{{tempJobDetails?.title}}</h2>
+          <ul class="flex flex-col sm:items-start sm:text-left text-center items-center -mb-1 space-y-2.5">
+            <li>
+              <span>
+                Country :
+              </span>{{tempJobDetails?.page?.location?.country_and_city}}
+            </li>
+            <li>
+              <span>
+                years of experiace :
+              </span>{{tempJobDetails?.minimum_years_of_experience}}
+            </li>
+            <li>
+              <span>
+                Name :
+              </span>{{tempJobDetails?.page?.name}}
+            </li>
+            <li>
+              <span>
+                company size :
+              </span>{{tempJobDetails?.page?.company_size}}
+            </li>
+            <li>
+              <span>
+                locations :
+              </span>{{tempJobDetails?.page?.location?.address_line_one + ' ' +
+              tempJobDetails?.page?.location?.address_line_two}}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="detailsState === 'apply'">
+      <div class="my-2">
+        <form autocomplete="off" [formGroup]="applyForm">
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+              Name
+            </label>
+            <input autocomplete="off"
+              class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+              id="name" type="text" placeholder="Name" formControlName="name">
+            <app-show-error [ctrl]="applyForm.controls['name']"></app-show-error>
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+              Email
+            </label>
+            <input autocomplete="off"
+              class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+              id="email" type="text" placeholder="Email" formControlName="email">
+            <app-show-error [ctrl]="applyForm.controls['email']"></app-show-error>
+
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="phone">
+              Phone
+            </label>
+            <input autocomplete="off"
+              class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+              id="phone" type="text" placeholder="Phone" formControlName="phone" appNumberOnly>
+            <app-show-error [ctrl]="applyForm.controls['phone']"></app-show-error>
+
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+              Country
+            </label>
+            <select
+              class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              id="grid-state" formControlName="country_code_id">
+              <option *ngFor="let country of countriesList" [value]="country.id">{{country.country_name}}</option>
+            </select>
+            <app-show-error [ctrl]="applyForm.controls['country_code_id']"></app-show-error>
+
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="education">
+              Education
+            </label>
+            <input autocomplete="off"
+              class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+              id="education" type="text" placeholder="Education" formControlName="education">
+            <app-show-error [ctrl]="applyForm.controls['education']"></app-show-error>
+
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="current_position">
+              Current Position
+            </label>
+            <input autocomplete="off"
+              class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+              id="current_position" type="text" placeholder="Current Position" formControlName="current_position">
+            <app-show-error [ctrl]="applyForm.controls['current_position']"></app-show-error>
+
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="company">
+              Company
+            </label>
+            <input autocomplete="off"
+              class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+              id="company" type="text" placeholder="company" formControlName="company">
+            <app-show-error [ctrl]="applyForm.controls['company']"></app-show-error>
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+              CV <span class="text-red-400 text-sm">(File Upload,limit 3MB)</span>
+            </label>
+            <input autocomplete="off"
+              class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
+              type="file" (change)="onUploadFile($event)" accept=".pdf,.docx,.png,.jpeg,.jpg">
+            <app-show-error [ctrl]="applyForm.controls['uploaded_link']"></app-show-error>
+
+          </div>
+          <div class="mb-4">
+            <textarea placeholder="Cover Letter"
+              class="min-h-[100px] appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"></textarea>
+          </div>
+
+        </form>
+      </div>
+    </ng-container>
+  </div>
+  <div class="modal-footer">
+    <div class="flex items-center gap-3">
+      <button type="button" class="bg-red-800 text-white py-2 px-4" (click)="onApplyJob()" [disabled]="tempJobDetails?.applied" *ngIf="detailsState === 'details'">{{tempJobDetails?.applied ? 'Applied' : 'Apply'}}</button>
+      <button type="button" class="bg-red-800 text-white py-2 px-4" (click)="handeSendApply()" *ngIf="detailsState === 'apply'">Send Apply</button>
+      <button type="button" class="bg-gray-800 text-white py-2 px-4" (click)="onSaveJob()">{{tempJobDetails?.saved ? 'Saved' : 'Save'}}</button>
+    </div>
+  </div>
+</ng-template>
