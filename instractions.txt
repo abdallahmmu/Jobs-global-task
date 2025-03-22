@@ -1,0 +1,12 @@
+1-Node.js & npm installed
+2-Angular CLI installed (npm install -g @angular/cli)
+3- npm install
+4- ng serve
+
+
+*notes: 
+
+1- the API has no keyword example to search in and also no countries example but the functionality is still working as expected as ordered in the task
+2- using effects to work with signal stores throw authentication module 
+3- folder structure will be shown in readme file 
+4- the given API have no description value all object are have null values for a description

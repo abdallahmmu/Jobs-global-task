@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, TemplateRef, ViewChild, WritableSignal } from '@angular/core';
 import { DataContextService } from '../../../shared/services/data-context.service';
-import { JobsDTO, ResultObjectDTO } from '../../../shared/dtos/jobs-dto';
+import { JobsDTO, MetaDTO, ResultObjectDTO } from '../../../shared/dtos/jobs-dto';
 import { UiHelperService } from '../../../shared/services/ui-helper.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -31,6 +31,7 @@ export class JobsListComponent implements OnInit {
     per_page: 11,
     pagination_type: 'paginate',
   });
+  MetaJobs!:MetaDTO
   private modalService = inject(NgbModal);
   applyForm!: FormGroup;
   countriesList: any;
@@ -66,6 +67,7 @@ export class JobsListComponent implements OnInit {
         const response = <ResultObjectDTO<JobsDTO>>data;
         this.jobsList.update((prevData) => prevData.concat(response.data));
         this.isJobsLoading.update((prevValue) => !prevValue);
+        this.MetaJobs = response.meta
         sub.unsubscribe()
 
       },

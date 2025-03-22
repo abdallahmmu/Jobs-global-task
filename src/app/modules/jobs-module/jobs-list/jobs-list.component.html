@@ -81,7 +81,7 @@
       <div class="h-[310px] w-full bg-gray-200 rounded-lg animate-pulse" aria-hidden="true"></div>
     </div>
   </div>
-  <div class="d-flex items-center justify-center my-4" *ngIf="jobsList().length > 0">
+  <div class="d-flex items-center justify-center my-4" *ngIf="jobsList().length > 0 && MetaJobs.current_page < MetaJobs.last_page">
     <button class="bg-red-800 text-white rounded-lg py-2 px-4">
       <span *ngIf="isJobsLoading()" class="loader"></span>
       <span *ngIf="!isJobsLoading()" (click)="loadMoreJobs()">Load more</span>
